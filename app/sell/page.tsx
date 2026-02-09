@@ -6,9 +6,11 @@ import ProtectedRoute from '../../components/auth/ProtectedRoute';
 export default function SellPage() {
   return (
     <ProtectedRoute>
-      <Wrapper>
+      <div className="animate-fade-in">
+        <Wrapper>
           <ListItem/>
-      </Wrapper>
+        </Wrapper>
+      </div>
     </ProtectedRoute>
   );
 }

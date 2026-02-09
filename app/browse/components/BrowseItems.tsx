@@ -241,13 +241,14 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
 
         {/* Items Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredItems.map((item: Item) => (
+          {filteredItems.map((item: Item, index: number) => (
             <div key={item.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
               <div className="relative aspect-square overflow-hidden">
                 <Image
                   src={item.image}
                   alt={item.title}
                   fill
+                  priority={index === 0}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />

@@ -6,7 +6,7 @@ import ProtectedRoute from '../../components/auth/ProtectedRoute';
 export default function BrowsePage() {
   return (
     <ProtectedRoute>
-      <div>
+      <div className="animate-fade-in">
         <Wrapper>
           <BrowseItems />
         </Wrapper>

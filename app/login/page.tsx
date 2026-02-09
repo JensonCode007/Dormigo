@@ -112,11 +112,11 @@ const LoginPage = () => {
   };
 
   const inputClasses = (hasError: boolean) => `
-    w-full px-4 py-3 pl-12 border rounded-md transition-colors duration-200
-    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+    w-full px-4 py-3.5 pl-12 border rounded-xl transition-all duration-200 text-sm
+    focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent
     ${hasError 
       ? 'border-red-500 bg-red-50' 
-      : 'border-gray-300 hover:border-gray-400 focus:border-blue-500'
+      : 'border-gray-200 bg-gray-50 hover:border-gray-300 focus:bg-white'
     }
   `;
 
@@ -126,39 +126,49 @@ const LoginPage = () => {
   `;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white relative overflow-hidden animate-fade-in">
+      {/* Decorative background elements */}
+      <div className="absolute top-20 right-10 w-96 h-96 bg-gray-100 rounded-full blur-3xl opacity-30" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-gray-50 rounded-full blur-3xl opacity-40" />
+      
       <Wrapper>
-        <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-md w-full space-y-8">
-            <div className="text-center">
-              <h2 className="mt-6 text-3xl font-bold text-gray-900">
+        <div className="relative z-10 flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-md w-full">
+            {/* Header */}
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-900 rounded-2xl mb-6">
+                <div className="w-6 h-6 bg-white rounded-full"></div>
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-3">
                 Welcome back
               </h2>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="text-gray-600">
                 Sign in to your Dormigo account
               </p>
             </div>
             
-            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-              {signupSuccess && (
-                <div className="bg-green-50 border border-green-200 rounded-md p-4 flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm text-green-700">Account created successfully! Please sign in.</span>
-                </div>
-              )}
+            {/* Form card */}
+            <div className="bg-white rounded-2xl shadow-xl shadow-gray-900/5 border border-gray-200 p-8">
+              <form className="space-y-5" onSubmit={handleSubmit}>
+                {signupSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <span className="text-sm text-green-800 font-medium">Account created successfully! Please sign in.</span>
+                  </div>
+                )}
 
-              {errors.general && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-4 flex items-center space-x-2">
-                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                  <span className="text-sm text-red-700">{errors.general}</span>
-                </div>
-              )}
+                {errors.general && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3">
+                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    <span className="text-sm text-red-800 font-medium">{errors.general}</span>
+                  </div>
+                )}
 
-              {/* Email */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
+                {/* Email */}
+                <div>
+                  <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
+                    Email Address
+                  </label>
                 <div className="relative">
                   <Mail className={iconClasses(!!errors.email)} />
                   <input
@@ -170,17 +180,17 @@ const LoginPage = () => {
                     className={inputClasses(!!errors.email)}
                     placeholder="john.doe@university.edu"
                   />
+                  </div>
+                  {errors.email && (
+                    <p className="mt-2 text-xs text-red-600 font-medium">{errors.email}</p>
+                  )}
                 </div>
-                {errors.email && (
-                  <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-                )}
-              </div>
 
-              {/* Password */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
+                {/* Password */}
+                <div>
+                  <label htmlFor="password" className="block text-sm font-semibold text-gray-900 mb-2">
+                    Password
+                  </label>
                 <div className="relative">
                   <Lock className={iconClasses(!!errors.password)} />
                   <input
@@ -202,73 +212,74 @@ const LoginPage = () => {
                     ) : (
                       <Eye className="w-5 h-5 text-gray-400 hover:text-gray-600" />
                     )}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="mt-2 text-xs text-red-600 font-medium">{errors.password}</p>
+                  )}
+                </div>
+
+                {/* Remember Me & Forgot Password */}
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center">
+                    <input
+                      id="rememberMe"
+                      name="rememberMe"
+                      type="checkbox"
+                      checked={formData.rememberMe}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
+                    />
+                    <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700">
+                      Remember me
+                    </label>
+                  </div>
+                  <Link 
+                    href="/forgot-password" 
+                    className="text-sm text-gray-900 hover:text-gray-700 font-medium"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                {/* Submit Button */}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`
+                      w-full flex justify-center items-center py-3.5 px-4 border border-transparent font-semibold rounded-xl text-white transition-all duration-200
+                      ${isSubmitting 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-gray-900 hover:bg-gray-800 shadow-lg shadow-gray-900/10 hover:shadow-xl hover:shadow-gray-900/20 hover:-translate-y-0.5'
+                      }
+                    `}
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Signing in...
+                      </div>
+                    ) : (
+                      'Sign In'
+                    )}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="mt-1 text-xs text-red-600">{errors.password}</p>
-                )}
-              </div>
+              </form>
+            </div>
 
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="rememberMe"
-                    name="rememberMe"
-                    type="checkbox"
-                    checked={formData.rememberMe}
-                    onChange={handleInputChange}
-                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-600">
-                    Remember me
-                  </label>
-                </div>
+            {/* Signup Link */}
+            <div className="text-center mt-6">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{' '}
                 <Link 
-                  href="/forgot-password" 
-                  className="text-sm text-blue-600 hover:text-blue-500"
+                  href="/signup" 
+                  className="font-semibold text-gray-900 hover:text-gray-700 transition-colors duration-200"
                 >
-                  Forgot password?
+                  Sign up here
                 </Link>
-              </div>
-
-              {/* Submit Button */}
-              <div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`
-                    group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white transition-colors duration-200
-                    ${isSubmitting 
-                      ? 'bg-gray-400 cursor-not-allowed' 
-                      : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-                    }
-                  `}
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Signing in...
-                    </div>
-                  ) : (
-                    'Sign In'
-                  )}
-                </button>
-              </div>
-
-              {/* Signup Link */}
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{' '}
-                  <Link 
-                    href="/signup" 
-                    className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
-                  >
-                    Sign up here
-                  </Link>
-                </p>
-              </div>
-            </form>
+              </p>
+            </div>
           </div>
         </div>
       </Wrapper>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, HelpCircle, User, LogOut, ChevronDown } from 'lucide-react';
+import { Search, User, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 const Header = () => {
@@ -47,96 +47,112 @@ const Header = () => {
   }, [showUserMenu]);
 
   return (
-    <header className="bg-white shadow-sm border-b">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-900 rounded-sm flex items-center justify-center">
-                <div className="w-3 h-3 bg-white rounded-full"></div>
+        <div className="flex items-center justify-between h-20">
+          {/* Logo and Navigation */}
+          <div className="flex items-center space-x-12">
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="w-4 h-4 bg-white rounded-full"></div>
               </div>
-              <Link href="/" className="text-xl font-semibold text-gray-900">
+              <span className="text-2xl font-bold text-gray-900 tracking-tight">
                 Dormigo
-              </Link>
-            </div>
-            <nav className="hidden md:flex space-x-8">
+              </span>
+            </Link>
+            
+            <nav className="hidden md:flex items-center space-x-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`font-medium px-3 py-2 rounded-full transition-colors text-xl ${
-                      isActive ? "text-gray-900 border-b-1 border-gray-500 pb-1" : "text-gray-700 hover:text-gray-900"
-
+                    className={`relative px-4 py-2.5 font-medium transition-all duration-200 ${
+                      isActive 
+                        ? "text-gray-900" 
+                        : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
                     {link.label}
+                    {isActive && (
+                      <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-gray-900 rounded-full" />
+                    )}
                   </Link>
                 );
               })}
             </nav>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+          {/* Right side actions */}
+          <div className="flex items-center space-x-3">
+            {/* Search */}
+            <div className="hidden lg:block relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                placeholder="Search items..."
+                className="pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white transition-all w-64 text-sm"
               />
             </div>
+
             {isAuthenticated && user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={handleUserMenuToggle}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 font-medium px-3 py-2 rounded-md transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200"
                 >
-                  <User className="w-5 h-5" />
-                  <span>{user.firstName} {user.lastName}</span>
-                  <ChevronDown className="w-4 h-4" />
+                  <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="hidden sm:block text-sm font-medium text-gray-900">
+                    {user.firstName}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                 </button>
                 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                    <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
-                      <p className="font-medium text-gray-900">{user.firstName} {user.lastName}</p>
-                      <p className="truncate">{user.email}</p>
-                      <p className="text-xs text-gray-400">{user.university}</p>
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-200 py-2 z-50 animate-fade-in-up">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="font-semibold text-gray-900">{user.firstName} {user.lastName}</p>
+                      <p className="text-sm text-gray-600 truncate">{user.email}</p>
+                      <p className="text-xs text-gray-500 mt-1">{user.university}</p>
                     </div>
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <User className="w-4 h-4 inline mr-2" />
-                      Profile
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center"
-                    >
-                      <LogOut className="w-4 h-4 inline mr-2" />
-                      Logout
-                    </button>
+                    <div className="py-2">
+                      <Link
+                        href="/profile"
+                        className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <User className="w-4 h-4 mr-3 text-gray-500" />
+                        View Profile
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4 mr-3 text-gray-500" />
+                        Logout
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
-              <>
-                <Link 
-                  href="/signup"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Sign Up
-                </Link>
+              <div className="flex items-center space-x-3">
                 <Link 
                   href="/login"
-                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-300 font-medium px-3 py-2 rounded-md transition-colors"
+                  className="hidden sm:block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all duration-200"
                 >
                   Login
                 </Link>
-              </>
+                <Link 
+                  href="/signup"
+                  className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
         </div>
