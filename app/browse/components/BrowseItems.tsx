@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Search, Heart, User, ChevronDown } from 'lucide-react';
+import { Search, Heart, ChevronDown, Sparkles, SlidersHorizontal } from 'lucide-react';
 
 // TypeScript interfaces
 interface Item {
@@ -25,80 +25,80 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
       id: 1,
       title: "Textbook: Calculus 101",
       condition: "Used, good condition",
-      price: 45,
+      price: 250,
       image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop&crop=center",
       category: "books",
-      campus: "north"
+      campus: "Onakoor"
     },
     {
       id: 2,
       title: "Desk Lamp",
       condition: "Like new",
-      price: 25,
+      price: 750,
       image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=300&fit=crop&crop=center",
       category: "furniture",
-      campus: "south"
+      campus: "Warriom Road"
     },
     {
       id: 3,
       title: "Mini Fridge",
       condition: "Excellent condition",
-      price: 120,
+      price: 3200,
       image: "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=400&h=300&fit=crop&crop=center",
       category: "appliances",
-      campus: "east"
+      campus: "Warriom Road"
     },
     {
       id: 4,
       title: "Bike",
       condition: "Barely used",
-      price: 80,
+      price: 2600,
       image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&crop=center",
       category: "transportation",
-      campus: "west"
+      campus: "Onakoor"
     },
     {
       id: 5,
       title: "Gaming Laptop",
       condition: "High-end specs",
-      price: 650,
+      price: 65000,
       image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=300&fit=crop&crop=center",
       category: "electronics",
-      campus: "north"
+      campus: "Onakoor"
     },
     {
       id: 6,
       title: "Dorm Room Decor",
       condition: "Various items",
-      price: 15,
+      price: 6000,
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center",
       category: "decor",
-      campus: "south"
+      campus: "Pune"
     },
     {
       id: 7,
       title: "Coffee Maker",
       condition: "New",
-      price: 35,
+      price: 3500,
       image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop&crop=center",
       category: "appliances",
-      campus: "east"
+      campus: "Onakoor"
     },
     {
       id: 8,
       title: "Microwave",
       condition: "Used",
-      price: 60,
+      price: 3200,
       image: "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=400&h=300&fit=crop&crop=center",
       category: "appliances",
-      campus: "west"
+      campus: "Warriom Road"
     }
   ]);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedCampus, setSelectedCampus] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
 
 
@@ -123,22 +123,28 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
     });
   };
 
-  const handlePriceRangeChange = (value: string): void => {
-    setPriceRange([priceRange[0], parseInt(value)]);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-20 right-10 w-72 h-72 bg-gray-100 rounded-full blur-3xl opacity-30" />
+      <div className="absolute bottom-40 left-10 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-20" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Page Header */}
+        <div className="text-center mb-12 animate-fade-in-up">
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+            Browse Listings
+          </h1>
+        </div>
+
         {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative max-w-xl">
+        <div className="mb-8 animate-fade-in-up-delay">
+          <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search for items..."
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+              className="w-full pl-12 pr-4 py-3.5 border border-gray-200 bg-gray-50 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white hover:border-gray-300 transition-all duration-200 text-sm"
               value={searchTerm}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
             />
@@ -146,12 +152,17 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-8">
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10 animate-fade-in-up-delay-2">
+          <div className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 mr-1">
+            <SlidersHorizontal className="w-4 h-4" />
+            Filters
+          </div>
+
           <div className="relative">
             <select
               value={selectedCategory}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCategory(e.target.value)}
-              className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+              className="appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 pr-9 text-sm font-medium text-gray-700 hover:border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white transition-all duration-200 cursor-pointer"
             >
               <option value="all">Category</option>
               <option value="books">Books</option>
@@ -161,88 +172,64 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
               <option value="transportation">Transportation</option>
               <option value="decor">Decor</option>
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
 
           <div className="relative">
             <select
               value={selectedCampus}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCampus(e.target.value)}
-              className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+              className="appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 pr-9 text-sm font-medium text-gray-700 hover:border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white transition-all duration-200 cursor-pointer"
             >
               <option value="all">Campus</option>
-              <option value="north">North Campus</option>
-              <option value="south">South Campus</option>
-              <option value="east">East Campus</option>
-              <option value="west">West Campus</option>
+              <option value="Onakoor">LP Campus</option>
+              <option value="Warriom Road">Warriom Road Campus</option>
+              <option value="Pune">Pune Campus</option>
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
 
-         {/* Price Filter Dropdown */}
-<div className="relative">
-  <select
-    value={`${priceRange[0]}-${priceRange[1]}`}
-    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-      switch (value) {
-        case "0-25":
-          setPriceRange([0, 25]);
-          break;
-        case "25-50":
-          setPriceRange([25, 50]);
-          break;
-        case "50-100":
-          setPriceRange([50, 100]);
-          break;
-        case "100-1000":
-          setPriceRange([100, 1000]);
-          break;
-        default:
-          setPriceRange([0, 1000]); // "all"
-      }
-    }}
-    className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
-  >
-    <option value="0-1000">Price</option>
-    <option value="0-25">$0 - $25</option>
-    <option value="25-50">$25 - $50</option>
-    <option value="50-100">$50 - $100</option>
-    <option value="100-1000">$100+</option>
-  </select>
-  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-</div>
-
-{/* Price Range Slider */}
-<div className="mb-8">
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Price Range
-  </label>
-  <div className="flex items-center space-x-4">
-    <span className="text-sm text-gray-600">${priceRange[0]}</span>
-    <div className="flex-1">
-      <input
-        type="range"
-        min="0"
-        max="1000"
-        step="10"
-        value={priceRange[1]}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          const newMax = parseInt(e.target.value);
-          setPriceRange([priceRange[0], newMax]);
-        }}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-      />
-    </div>
-    <span className="text-sm text-gray-600">${priceRange[1]}</span>
-  </div>
-</div>
-</div>
+          <div className="relative">
+            <select
+              value={`${priceRange[0]}-${priceRange[1]}`}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                const value = e.target.value;
+                switch (value) {
+                  case "0-250":
+                    setPriceRange([0, 250]);
+                    break;
+                  case "250-500":
+                    setPriceRange([250, 500]);
+                    break;
+                  case "500-1000":
+                    setPriceRange([500, 1000]);
+                    break;
+                  case "1000-10000":
+                    setPriceRange([1000, 10000]);
+                    break;
+                  default:
+                    setPriceRange([0, 10000]);
+                }
+              }}
+              className="appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 pr-9 text-sm font-medium text-gray-700 hover:border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white transition-all duration-200 cursor-pointer"
+            >
+              <option value="0-10000">Price</option>
+              <option value="0-250">0 - ₹250</option>
+              <option value="250-500">₹250 - ₹500</option>
+              <option value="500-1000">₹500 - ₹1000</option>
+              <option value="1000-10000">₹1000+</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
 
         {/* Items Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredItems.map((item: Item, index: number) => (
-            <div key={item.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+            <div
+              key={item.id}
+              className="group bg-white rounded-2xl border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-xl hover:shadow-gray-900/5 transition-all duration-300 overflow-hidden hover:-translate-y-0.5"
+            >
               <div className="relative aspect-square overflow-hidden">
                 <Image
                   src={item.image}
@@ -254,7 +241,7 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
                 />
                 <button
                   onClick={() => toggleFavorite(item.id)}
-                  className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                  className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-sm"
                   aria-label={`Toggle favorite for ${item.title}`}
                 >
                   <Heart
@@ -263,15 +250,15 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
                     }`}
                   />
                 </button>
-                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                  <span className="text-xs font-medium text-gray-900">${item.price}</span>
+                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm">
+                  <span className="text-sm font-semibold text-gray-900">₹{item.price}</span>
                 </div>
               </div>
-              
-              <div className="p-4">
+
+              <div className="p-5">
                 <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
-                <p className="text-sm text-gray-600 mb-3">{item.condition}</p>
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                <p className="text-sm text-gray-600 mb-4">{item.condition}</p>
+                <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-gray-900/10 cursor-pointer">
                   View Details
                 </button>
               </div>
@@ -280,12 +267,12 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
         </div>
 
         {filteredItems.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-10 h-10 text-gray-400" />
+          <div className="text-center py-20">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-50 border border-gray-200 rounded-2xl mx-auto mb-6">
+              <Search className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-            <p className="text-gray-600">Try adjusting your search or filters</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">No items found</h3>
+            <p className="text-gray-600 max-w-md mx-auto">Try adjusting your search or filters to discover more listings.</p>
           </div>
         )}
       </div>
@@ -294,4 +281,3 @@ const BrowseItems: React.FC<BrowseItemsProps> = ({ initialItems = [] }) => {
 };
 
 export default BrowseItems;
-
