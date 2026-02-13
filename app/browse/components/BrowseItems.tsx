@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Search, Heart, ChevronDown, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { Search, Heart, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 // TypeScript interfaces
 interface Item {

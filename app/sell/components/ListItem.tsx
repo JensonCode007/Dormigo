@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { X, Package, DollarSign, AlignLeft, Tag, ImageIcon, MapPin, IndianRupee } from 'lucide-react';
+import { X, Package, AlignLeft, Tag, ImageIcon, IndianRupee } from 'lucide-react';
 
 // TypeScript interfaces
 interface FormData {
