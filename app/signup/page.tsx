@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Wrapper from '@/components/magicui/Wrapper';
 import { Eye, EyeOff, User, Mail, Lock, GraduationCap, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAuth } from '@/lib/auth-context';
+import { signupApi } from '@/lib/api/auth';
+import { ApiError } from '@/lib/api/client';
 
 interface FormData {
   firstName: string;
@@ -30,7 +31,6 @@ interface FormErrors {
 
 const SignUpPage = () => {
   const router = useRouter();
-  const { login } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -77,13 +77,13 @@ const SignUpPage = () => {
       newErrors.university = 'University is required';
     }
 
-    // Password validation
+    // Password validation (must match backend: digit, lowercase, uppercase, special char)
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    } else if (!/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@#$%^&+=)';
     }
 
     // Confirm password validation
@@ -129,35 +129,27 @@ const SignUpPage = () => {
     setSubmitStatus('idle');
 
     try {
-      // Simulate API call - replace with actual signup API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Create user object from form data
-      const newUser = {
-        id: `user_${Date.now()}`, // In real app, this would come from the API
-        email: formData.email,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        university: formData.university,
-      };
-      
-      // Log in the user immediately after successful signup
-      login(newUser);
+      await signupApi(
+        formData.firstName,
+        formData.lastName,
+        formData.email,
+        formData.password,
+      );
+
       setSubmitStatus('success');
-      
-      // Check if there's a redirect URL stored
-      const redirectUrl = localStorage.getItem('dormigo_redirect_after_login');
-      localStorage.removeItem('dormigo_redirect_after_login');
-      
-      // Redirect to intended page or dashboard
+
+      // Backend doesn't return a token on signup — redirect to login
       setTimeout(() => {
-        router.push(redirectUrl || '/browse');
+        router.push('/login?message=signup-success');
       }, 1500);
-      
+
     } catch (error) {
-      console.error('Signup error:', error);
       setSubmitStatus('error');
-      setErrors({ general: 'An error occurred during signup. Please try again.' });
+      if (error instanceof ApiError) {
+        setErrors({ general: error.message || 'Signup failed. Please try again.' });
+      } else {
+        setErrors({ general: 'Unable to connect to the server. Please try again.' });
+      }
     } finally {
       setIsSubmitting(false);
     }

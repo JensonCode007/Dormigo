@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Wrapper from '@/components/magicui/Wrapper';
 import { Eye, EyeOff, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { loginApi } from '@/lib/api/auth';
+import { ApiError } from '@/lib/api/client';
 
 interface FormData {
   email: string;
@@ -82,20 +84,18 @@ const LoginForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call - replace with actual login API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await loginApi(formData.email, formData.password);
 
-      // Simulate user data - in real app, this would come from the API
       const userData = {
-        id: 'demo_user_123',
-        email: formData.email,
-        firstName: 'John', // These would come from the API response
-        lastName: 'Doe',
-        university: 'Demo University',
+        id: response.userId.toString(),
+        email: response.email,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        university: '',
+        role: response.role,
       };
 
-      // Log in the user
-      login(userData);
+      login(userData, response.token);
 
       // Check for redirect URL or use stored redirect
       const targetUrl = redirectUrl || localStorage.getItem('dormigo_redirect_after_login') || '/browse';
@@ -104,8 +104,13 @@ const LoginForm = () => {
       router.push(decodeURIComponent(targetUrl));
 
     } catch (error) {
-      console.error('Login error:', error);
-      setErrors({ general: 'Invalid email or password. Please try again.' });
+      if (error instanceof ApiError && error.status === 401) {
+        setErrors({ general: 'Invalid email or password. Please try again.' });
+      } else if (error instanceof ApiError) {
+        setErrors({ general: error.message || 'Login failed. Please try again.' });
+      } else {
+        setErrors({ general: 'Unable to connect to the server. Please try again.' });
+      }
     } finally {
       setIsSubmitting(false);
     }

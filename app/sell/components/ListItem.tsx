@@ -1,14 +1,22 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Package, AlignLeft, Tag, ImageIcon, IndianRupee } from 'lucide-react';
+import {
+  createProduct,
+  uploadProductImage,
+  getCategories,
+  type CategoryResponse,
+} from '@/lib/api/products';
+import { ApiError } from '@/lib/api/client';
 
 // TypeScript interfaces
 interface FormData {
   title: string;
   price: string;
   description: string;
-  category: string;
+  categoryId: string;
+  condition: string;
   campus: string;
   acceptTrades: boolean;
 }
@@ -19,40 +27,48 @@ interface UploadedImage {
   preview: string;
 }
 
+const CONDITIONS = [
+  { value: '', label: 'Select condition' },
+  { value: 'NEW', label: 'New' },
+  { value: 'LIKE_NEW', label: 'Like New' },
+  { value: 'GOOD', label: 'Good' },
+  { value: 'FAIR', label: 'Fair' },
+  { value: 'POOR', label: 'Poor' },
+];
+
+const campuses = [
+  { value: '', label: 'Select a campus' },
+  { value: 'Onakoor', label: 'LP Campus' },
+  { value: 'Warriom Road', label: 'Warriom Road Campus' },
+  { value: 'Pune', label: 'Pune Campus' },
+];
+
 const ListItem: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     price: '',
     description: '',
-    category: '',
+    categoryId: '',
+    condition: '',
     campus: '',
-    acceptTrades: false
+    acceptTrades: false,
   });
 
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [apiCategories, setApiCategories] = useState<CategoryResponse[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const categories = [
-    { value: '', label: 'Select a category' },
-    { value: 'books', label: 'Books & Textbooks' },
-    { value: 'furniture', label: 'Furniture' },
-    { value: 'electronics', label: 'Electronics' },
-    { value: 'appliances', label: 'Appliances' },
-    { value: 'transportation', label: 'Transportation' },
-    { value: 'decor', label: 'Decor & Home' },
-    { value: 'clothing', label: 'Clothing' },
-    { value: 'sports', label: 'Sports & Recreation' },
-    { value: 'other', label: 'Other' }
-  ];
-
-  const campuses = [
-    { value: '', label: 'Select a campus' },
-    { value: 'Onakoor', label: 'LP Campus' },
-    { value: 'Warriom Road', label: 'Warriom Road Campus' },
-    { value: 'Pune', label: 'Pune Campus' }
-  ];
+  useEffect(() => {
+    getCategories()
+      .then(setApiCategories)
+      .catch(() => {
+        // Categories will remain empty; user can still submit without one
+      });
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -121,34 +137,45 @@ const ListItem: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
 
     try {
-      // Here you would integrate with your backend API
-      const itemData = {
-        ...formData,
-        images: uploadedImages.map(img => img.file)
-      };
+      // 1. Create the product
+      const product = await createProduct({
+        title: formData.title,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        quantity: 1,
+        condition: formData.condition || undefined,
+        categoryId: formData.categoryId ? Number(formData.categoryId) : undefined,
+        isAvailable: true,
+      });
 
-      console.log('Submitting item:', itemData);
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // 2. Upload images one by one
+      for (const img of uploadedImages) {
+        await uploadProductImage(product.id, img.file);
+        URL.revokeObjectURL(img.preview);
+      }
 
       // Reset form on success
       setFormData({
         title: '',
         price: '',
         description: '',
-        category: '',
+        categoryId: '',
+        condition: '',
         campus: '',
-        acceptTrades: false
+        acceptTrades: false,
       });
       setUploadedImages([]);
-
-      alert('Item listed successfully!');
+      setSubmitSuccess(true);
     } catch (error) {
-      console.error('Error submitting item:', error);
-      alert('Error listing item. Please try again.');
+      if (error instanceof ApiError) {
+        setSubmitError(error.message || 'Failed to list item. Please try again.');
+      } else {
+        setSubmitError('Unable to connect to the server. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -184,6 +211,16 @@ const ListItem: React.FC = () => {
 
           {/* Form card */}
           <div className="bg-white rounded-2xl shadow-xl shadow-gray-900/5 border border-gray-200 p-8 animate-fade-in-up-delay">
+            {submitSuccess && (
+              <div className="mb-5 bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800 font-medium">
+                Item listed successfully! It will appear in the browse page shortly.
+              </div>
+            )}
+            {submitError && (
+              <div className="mb-5 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800 font-medium">
+                {submitError}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Title */}
               <div>
@@ -249,20 +286,43 @@ const ListItem: React.FC = () => {
 
               {/* Category */}
               <div>
-                <label htmlFor="category" className="block text-sm font-semibold text-gray-900 mb-2">
+                <label htmlFor="categoryId" className="block text-sm font-semibold text-gray-900 mb-2">
                   Category
                 </label>
                 <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
+                  id="categoryId"
+                  name="categoryId"
+                  value={formData.categoryId}
                   onChange={handleInputChange}
                   className={`${inputClasses} cursor-pointer`}
-                  required
                 >
-                  {categories.map(cat => (
-                    <option key={cat.value} value={cat.value} disabled={cat.value === ''}>
-                      {cat.label}
+                  <option value="">Select a category</option>
+                  {apiCategories.map(cat => (
+                    <option key={cat.id} value={String(cat.id)}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                {apiCategories.length === 0 && (
+                  <p className="mt-1 text-xs text-gray-400">No categories loaded — categories can be added by an admin.</p>
+                )}
+              </div>
+
+              {/* Condition */}
+              <div>
+                <label htmlFor="condition" className="block text-sm font-semibold text-gray-900 mb-2">
+                  Condition
+                </label>
+                <select
+                  id="condition"
+                  name="condition"
+                  value={formData.condition}
+                  onChange={handleInputChange}
+                  className={`${inputClasses} cursor-pointer`}
+                >
+                  {CONDITIONS.map(opt => (
+                    <option key={opt.value} value={opt.value} disabled={opt.value === ''}>
+                      {opt.label}
                     </option>
                   ))}
                 </select>
@@ -331,6 +391,7 @@ const ListItem: React.FC = () => {
                   <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-3">
                     {uploadedImages.map((image) => (
                       <div key={image.id} className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={image.preview}
                           alt="Preview"
