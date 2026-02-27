@@ -152,9 +152,10 @@ const ListItem: React.FC = () => {
         isAvailable: true,
       });
 
-      // 2. Upload images one by one
-      for (const img of uploadedImages) {
-        await uploadProductImage(product.id, img.file);
+      // 2. Upload images one by one; first image is the primary
+      for (let i = 0; i < uploadedImages.length; i++) {
+        const img = uploadedImages[i];
+        await uploadProductImage(product.id, img.file, i === 0);
         URL.revokeObjectURL(img.preview);
       }
 

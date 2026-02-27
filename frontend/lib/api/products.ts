@@ -67,8 +67,8 @@ export async function getProducts(page = 0, size = 20): Promise<PagedResponse<Pr
   );
 }
 
-export async function searchProducts(query: string, page = 0, size = 20): Promise<PagedResponse<ProductResponse>> {
-  const params = new URLSearchParams({ query, page: String(page), size: String(size) });
+export async function searchProducts(query: string, page = 0, size = 20, sortDir = 'ASC'): Promise<PagedResponse<ProductResponse>> {
+  const params = new URLSearchParams({ query, page: String(page), size: String(size), sortDir });
   return apiFetch<PagedResponse<ProductResponse>>(
     `/api/products/public/search?${params}`,
     { skipAuth: true },
@@ -82,9 +82,10 @@ export async function createProduct(data: CreateProductRequest): Promise<Product
   });
 }
 
-export async function uploadProductImage(productId: number, file: File): Promise<unknown> {
+export async function uploadProductImage(productId: number, file: File, isPrimary = false): Promise<unknown> {
   const formData = new FormData();
   formData.append('image', file);
+  formData.append('isPrimary', String(isPrimary));
   return apiFetch<unknown>(`/api/products/${productId}/images`, {
     method: 'POST',
     body: formData,
