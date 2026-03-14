@@ -13,20 +13,10 @@ const Header = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/browse', label: 'Browse' },
-    { href: '/sell', label: 'Sell' },
-  ];
-
   const handleLogout = () => {
     logout();
     setShowUserMenu(false);
     router.push('/');
-  };
-
-  const handleUserMenuToggle = () => {
-    setShowUserMenu(!showUserMenu);
   };
 
   // Close user menu when clicking outside
@@ -46,22 +36,29 @@ const Header = () => {
     };
   }, [showUserMenu]);
 
+  const navLinks = [
+    { href: '/browse', label: 'Browse' },
+    { href: '/sell', label: 'Sell' },
+  ];
+
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo and Navigation */}
-          <div className="flex items-center space-x-12">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <div className="w-4 h-4 bg-white rounded-full"></div>
-              </div>
-              <span className="text-2xl font-bold text-gray-900 tracking-tight">
-                Dormigo
-              </span>
-            </Link>
-            
-            <nav className="hidden md:flex items-center space-x-1">
+
+          {/* Left: Logo */}
+          <Link href={isAuthenticated ? '/browse' : '/'} className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-4 h-4 bg-white rounded-full"></div>
+            </div>
+            <span className="text-2xl font-bold text-gray-900 tracking-tight">
+              Dormigo
+            </span>
+          </Link>
+
+          {/* Center: Nav links (authenticated only) */}
+          {isAuthenticated && (
+            <nav className="hidden md:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -69,9 +66,9 @@ const Header = () => {
                     key={link.href}
                     href={link.href}
                     className={`relative px-4 py-2.5 font-medium transition-all duration-200 ${
-                      isActive 
-                        ? "text-gray-900" 
-                        : "text-gray-600 hover:text-gray-900"
+                      isActive
+                        ? 'text-gray-900'
+                        : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
                     {link.label}
@@ -82,73 +79,73 @@ const Header = () => {
                 );
               })}
             </nav>
-          </div>
+          )}
 
-          {/* Right side actions */}
+          {/* Right: Actions */}
           <div className="flex items-center space-x-3">
-            {isAuthenticated && (
-              <Link
-                href="/cart"
-                className="p-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200 text-gray-600 hover:text-gray-900"
-                aria-label="Cart"
-              >
-                <ShoppingCart className="w-5 h-5" />
-              </Link>
-            )}
-
             {isAuthenticated && user ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={handleUserMenuToggle}
-                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200"
+              <>
+                <Link
+                  href="/cart"
+                  className="p-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200 text-gray-600 hover:text-gray-900"
+                  aria-label="Cart"
                 >
-                  <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="hidden sm:block text-sm font-medium text-gray-900">
-                    {user.firstName}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-200 py-2 z-50 animate-fade-in-up">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="font-semibold text-gray-900">{user.firstName} {user.lastName}</p>
-                      <p className="text-sm text-gray-600 truncate">{user.email}</p>
-                      {user.university && (
-                        <p className="text-xs text-gray-500 mt-1">{user.university}</p>
-                      )}
+                  <ShoppingCart className="w-5 h-5" />
+                </Link>
+
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center space-x-2 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200"
+                  >
+                    <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
                     </div>
-                    <div className="py-2">
-                      <Link
-                        href="/profile"
-                        className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        <User className="w-4 h-4 mr-3 text-gray-500" />
-                        View Profile
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4 mr-3 text-gray-500" />
-                        Logout
-                      </button>
+                    <span className="hidden sm:block text-sm font-medium text-gray-900">
+                      {user.firstName}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-200 py-2 z-50 animate-fade-in-up">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="font-semibold text-gray-900">{user.firstName} {user.lastName}</p>
+                        <p className="text-sm text-gray-600 truncate">{user.email}</p>
+                        {user.university && (
+                          <p className="text-xs text-gray-500 mt-1">{user.university}</p>
+                        )}
+                      </div>
+                      <div className="py-2">
+                        <Link
+                          href="/profile"
+                          className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <User className="w-4 h-4 mr-3 text-gray-500" />
+                          View Profile
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4 mr-3 text-gray-500" />
+                          Logout
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              </>
             ) : (
               <div className="flex items-center space-x-3">
-                <Link 
+                <Link
                   href="/login"
                   className="hidden sm:block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all duration-200"
                 >
                   Login
                 </Link>
-                <Link 
+                <Link
                   href="/signup"
                   className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
@@ -157,6 +154,7 @@ const Header = () => {
               </div>
             )}
           </div>
+
         </div>
       </div>
     </header>
