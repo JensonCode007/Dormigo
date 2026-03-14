@@ -50,21 +50,6 @@ const HeroSection = () => {
             </Link>
           </div>
 
-          {/* Stats */}
-          <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto animate-fade-in-up-delay-3">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">500+</div>
-              <div className="text-sm text-gray-600 mt-1">Active Listings</div>
-            </div>
-            <div className="text-center border-x border-gray-200">
-              <div className="text-3xl font-bold text-gray-900">1,200+</div>
-              <div className="text-sm text-gray-600 mt-1">Students</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">98%</div>
-              <div className="text-sm text-gray-600 mt-1">Satisfaction</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -152,7 +137,7 @@ const HowItWorksSection = () => {
             How It Works
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Getting started is simple. Join thousands of students already using Dormigo.
+            Getting started is simple. List your first item in under a minute.
           </p>
         </div>
 
